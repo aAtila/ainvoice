@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyJwt } from '@/lib/jwt';
 
 // Define public routes that don't require authentication
 const publicRoutes = ['/login', '/signup', '/reset-password'];
@@ -17,11 +17,7 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
   
   // Verify the token if it exists
-  let isAuthenticated = false;
-  if (token) {
-    const payload = verifyToken(token);
-    isAuthenticated = !!payload;
-  }
+  const isAuthenticated = token ? !!(await verifyJwt(token)) : false;
   
   // Redirect authenticated users away from auth pages
   if (isAuthenticated && isAuthRoute) {

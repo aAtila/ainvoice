@@ -13,7 +13,7 @@ export {
   TaxRate,
   InvoiceStatus,
   RecurringInterval,
-} from '../generated/prisma';
+} from '@prisma/client';
 
 // Custom types that aren't in Prisma
 export type Currency = 'USD' | 'EUR' | 'GBP' | string;

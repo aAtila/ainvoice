@@ -1,31 +1,48 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { ArrowLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
-import ClientForm from '@/components/clients/ClientForm';
-import { useClient, useUpdateClient, useDeleteClient, useClientStats } from '@/hooks/useClients';
-import ErrorMessage from '@/components/ui/ErrorMessage';
-import Button from '@/components/ui/Button';
-import Modal from '@/components/ui/Modal';
-import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
-import type { UpdateClientInput } from '@/lib/validations/client';
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
+import ClientForm from "@/components/clients/ClientForm";
+import {
+  useClient,
+  useUpdateClient,
+  useDeleteClient,
+  useClientStats,
+} from "@/hooks/useClients";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
+import Card from "@/components/ui/Card";
+import Badge from "@/components/ui/Badge";
+import type { UpdateClientInput } from "@/lib/validations/client";
 
-interface PageProps {
+interface ClientPageProps {
   params: {
     id: string;
   };
 }
 
-export default function EditClientPage({ params }: PageProps) {
+export default function EditClientPage({ params }: ClientPageProps) {
   const router = useRouter();
-  const { client, isLoading: isLoadingClient, error: clientError } = useClient(params.id);
+  const {
+    client,
+    isLoading: isLoadingClient,
+    error: clientError,
+  } = useClient(params.id);
   const { stats } = useClientStats(params.id);
-  const { updateClient, isLoading: isUpdating, error: updateError } = useUpdateClient(params.id);
-  const { deleteClient, isLoading: isDeleting, error: deleteError } = useDeleteClient();
-  
+  const {
+    updateClient,
+    isLoading: isUpdating,
+    error: updateError,
+  } = useUpdateClient(params.id);
+  const {
+    deleteClient,
+    isLoading: isDeleting,
+    error: deleteError,
+  } = useDeleteClient();
+
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -33,16 +50,18 @@ export default function EditClientPage({ params }: PageProps) {
     setSubmitError(null);
     try {
       await updateClient(data);
-      router.push('/clients');
+      router.push("/clients");
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Failed to update client');
+      setSubmitError(
+        err instanceof Error ? err.message : "Failed to update client"
+      );
     }
   };
 
   const handleDelete = async () => {
     try {
       await deleteClient(params.id);
-      router.push('/clients');
+      router.push("/clients");
     } catch {
       // Error is handled by the hook
       setShowDeleteModal(false);
@@ -51,9 +70,9 @@ export default function EditClientPage({ params }: PageProps) {
 
   // Format currency
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount / 100);
@@ -70,7 +89,7 @@ export default function EditClientPage({ params }: PageProps) {
   if (clientError || !client) {
     return (
       <div className="space-y-4">
-        <ErrorMessage message={clientError?.message || 'Client not found'} />
+        <ErrorMessage message={clientError?.message || "Client not found"} />
         <Link href="/clients">
           <Button variant="outline">Back to Clients</Button>
         </Link>
@@ -83,8 +102,8 @@ export default function EditClientPage({ params }: PageProps) {
       {/* Page Header with Breadcrumb */}
       <div>
         <nav className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
-          <Link 
-            href="/clients" 
+          <Link
+            href="/clients"
             className="hover:text-gray-900 dark:hover:text-white transition-colors"
           >
             Clients
@@ -92,7 +111,7 @@ export default function EditClientPage({ params }: PageProps) {
           <span>/</span>
           <span className="text-gray-900 dark:text-white">{client.name}</span>
         </nav>
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
@@ -111,7 +130,7 @@ export default function EditClientPage({ params }: PageProps) {
               </p>
             </div>
           </div>
-          
+
           <Button
             variant="danger"
             onClick={() => setShowDeleteModal(true)}
@@ -136,7 +155,7 @@ export default function EditClientPage({ params }: PageProps) {
               </p>
             </div>
           </Card>
-          
+
           <Card>
             <div className="px-6 py-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -147,7 +166,7 @@ export default function EditClientPage({ params }: PageProps) {
               </p>
             </div>
           </Card>
-          
+
           <Card>
             <div className="px-6 py-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -158,7 +177,7 @@ export default function EditClientPage({ params }: PageProps) {
               </p>
             </div>
           </Card>
-          
+
           <Card>
             <div className="px-6 py-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -199,9 +218,13 @@ export default function EditClientPage({ params }: PageProps) {
                   <div className="flex items-center gap-4">
                     <Badge
                       variant={
-                        invoice.status === 'paid' ? 'success' :
-                        invoice.status === 'overdue' ? 'error' :
-                        invoice.status === 'sent' ? 'info' : 'default'
+                        invoice.status === "paid"
+                          ? "success"
+                          : invoice.status === "overdue"
+                          ? "error"
+                          : invoice.status === "sent"
+                          ? "info"
+                          : "default"
                       }
                     >
                       {invoice.status}
@@ -219,14 +242,18 @@ export default function EditClientPage({ params }: PageProps) {
 
       {/* Error Display */}
       {(updateError || submitError || deleteError) && (
-        <ErrorMessage message={submitError || updateError || deleteError || 'An error occurred'} />
+        <ErrorMessage
+          message={
+            submitError || updateError || deleteError || "An error occurred"
+          }
+        />
       )}
 
       {/* Client Form */}
-      <ClientForm 
-        client={client} 
-        onSubmit={handleSubmit} 
-        isSubmitting={isUpdating} 
+      <ClientForm
+        client={client}
+        onSubmit={handleSubmit}
+        isSubmitting={isUpdating}
       />
 
       {/* Delete Confirmation Modal */}
@@ -238,10 +265,11 @@ export default function EditClientPage({ params }: PageProps) {
       >
         <div className="space-y-4">
           <p className="text-gray-700 dark:text-gray-300">
-            Are you sure you want to delete this client? This action cannot be undone.
+            Are you sure you want to delete this client? This action cannot be
+            undone.
           </p>
           {stats && stats.totalInvoices > 0 && (
-            <ErrorMessage 
+            <ErrorMessage
               message={`This client has ${stats.totalInvoices} invoice(s) and cannot be deleted.`}
               showIcon
             />
