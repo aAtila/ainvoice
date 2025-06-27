@@ -87,7 +87,7 @@
       - `next.config.ts` - ESLint configuration
     - Added Prisma Studio npm script for database inspection
 
-- [ ] Step 5: Main application layout and navigation
+- [x] Step 5: Main application layout and navigation
   - **Task**: Create authenticated app layout with sidebar navigation, header, and theme toggle
   - **Files**:
     - `src/app/(dashboard)/layout.tsx`: Main dashboard layout
@@ -98,10 +98,44 @@
     - `src/app/globals.css`: Update with theme variables and dark mode styles
   - **Step Dependencies**: Step 4
   - **User Instructions**: None
+  - **Review**:
+    - Implemented a professional dashboard layout with sidebar and header components
+    - Added dependency: @heroicons/react for UI icons
+    - Created dashboard layout in `src/app/(dashboard)/layout.tsx` that:
+      - Protects routes by checking authentication
+      - Provides two-column layout with sidebar and main content area
+      - Passes user data to Header component
+    - Sidebar component features:
+      - Navigation links for Dashboard, Invoices, Clients, Time Tracking, Reports, Settings
+      - Active state highlighting based on current route
+      - Mobile-responsive with hamburger menu and overlay
+      - Smooth transitions and dark mode support
+    - Header component includes:
+      - User information display (name and email)
+      - Dropdown menu with Profile, Settings, and Sign Out options
+      - Theme toggle integration
+      - Click-outside handling for dropdown
+    - Theme system implementation:
+      - ThemeToggle component with sun/moon icons
+      - Persists theme preference to localStorage
+      - Detects system preference as fallback
+      - Script in root layout prevents flash of unstyled content
+      - Added `suppressHydrationWarning` to html element
+    - Updated global styles with:
+      - CSS variables for colors, spacing, shadows, and border radius
+      - Dark mode color scheme that inverts the color hierarchy
+      - Smooth transitions for theme switching
+      - Custom scrollbar styling
+      - Focus and selection styles
+    - Updated dashboard page (`src/app/page.tsx`):
+      - Removed duplicate layout elements (now handled by dashboard layout)
+      - Added stats grid showing Total Revenue, Active Invoices, Total Clients, Time Tracked
+      - Added Recent Activity section placeholder
+      - Clean, card-based design with dark mode support
 
 ## Core UI Components
 
-- [ ] Step 6: Base UI components library
+- [x] Step 6: Base UI components library
 
   - **Task**: Create reusable UI components following design system principles
   - **Files**:
@@ -115,6 +149,59 @@
     - `src/lib/cn.ts`: Class name utility function
   - **Step Dependencies**: Step 5
   - **User Instructions**: None
+  - **Review**:
+    - Installed dependencies: clsx and tailwind-merge for className utilities
+    - Created `cn` utility function that combines clsx and tailwind-merge for safe class merging
+    - **Button component** features:
+      - 5 variants: primary, secondary, outline, ghost, danger
+      - 3 sizes: sm, md, lg
+      - Loading state with spinner animation
+      - Full width option
+      - Proper disabled states and keyboard navigation
+      - Uses forwardRef for flexibility
+    - **Input component** includes:
+      - Label, error message, and hint text support
+      - Prefix and suffix slots for icons or text
+      - 3 sizes matching Button component
+      - Error state styling with red borders
+      - Dark mode compatible with focus states
+    - **Select component** provides:
+      - Native select with custom styling
+      - Consistent design with Input component
+      - Custom arrow icon
+      - Placeholder support
+      - Error state handling
+    - **Modal component** features:
+      - Backdrop with configurable click-to-close
+      - Smooth fade and zoom animations
+      - 3 sizes: sm, md, lg
+      - Keyboard escape to close
+      - Focus trap implementation
+      - Body scroll lock when open
+      - Accessible with ARIA attributes
+    - **Card component** includes:
+      - Optional header and footer sections
+      - Hoverable state for interactive cards
+      - Convenience subcomponents: CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+      - Flexible padding options
+    - **Badge component** provides:
+      - 5 variants: default, success, warning, error, info
+      - 2 sizes: sm, md
+      - Optional dot indicator
+      - Semantic colors for status indication
+    - **Table component** features:
+      - Responsive with horizontal scroll
+      - Striped rows option
+      - Sortable column headers (visual indicators)
+      - Hover states on rows
+      - Empty state component
+      - Subcomponents: Table, TableHeader, TableBody, TableRow, TableHead, TableCell
+    - All components are:
+      - Fully typed with TypeScript
+      - Dark mode compatible using CSS variables
+      - Accessible with proper ARIA attributes
+      - Using consistent naming conventions
+      - Following the project's design system
 
 - [ ] Step 7: Form components and validation
   - **Task**: Create form handling components with validation using react-hook-form and zod
