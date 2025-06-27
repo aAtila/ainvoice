@@ -370,7 +370,7 @@
 
 ## Invoice Core Features
 
-- [ ] Step 10: Invoice data operations
+- [x] Step 10: Invoice data operations
 
   - **Task**: Create server actions and hooks for invoice CRUD operations
   - **Files**:
@@ -380,6 +380,36 @@
     - `src/lib/invoice-utils.ts`: Invoice calculation utilities
   - **Step Dependencies**: Step 8
   - **User Instructions**: None
+  - **Review**:
+    - Implemented comprehensive invoice data operations following the same patterns as client management
+    - **Validation schemas** (`src/lib/validations/invoice.ts`):
+      - Created Zod schemas for line items, invoice creation, updates, filtering, and search
+      - Added validation for status transitions and date relationships
+      - Enforces business rules like minimum line items and valid tax rates
+    - **Calculation utilities** (`src/lib/invoice-utils.ts`):
+      - Pure functions for amount/tax calculations using integer math (minor units)
+      - Invoice number generation with customizable prefix/suffix
+      - Status computation based on dates and payment status
+      - Helper functions for UI display and business logic checks
+    - **Server actions** (`src/lib/actions/invoices.ts`):
+      - Full CRUD operations with user authentication and ownership verification
+      - Atomic invoice number generation using Prisma transactions
+      - Advanced filtering with search, status, client, and date range
+      - Statistics aggregation for dashboard display
+      - Special actions: mark as paid, duplicate invoice
+      - Proper error handling with user-friendly messages
+    - **SWR hooks** (`src/hooks/useInvoices.ts`):
+      - React hooks for all invoice operations with optimistic updates
+      - Cache invalidation strategies for data consistency
+      - Search with debouncing for better UX
+      - Loading and error states for all mutations
+    - **Type updates**:
+      - Added `InvoiceWithLineItems` type to `src/lib/types.ts`
+    - **Key architectural decisions**:
+      - Store all monetary values in minor units (cents) to avoid floating-point issues
+      - Use database transactions for invoice number generation to prevent duplicates
+      - Implement status transition validation to maintain data integrity
+      - Follow established patterns from client management for consistency
 
 - [ ] Step 11: Invoice creation and editing
 

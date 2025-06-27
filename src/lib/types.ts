@@ -85,6 +85,11 @@ export interface InvoiceWithRelations extends Invoice {
   user: User;
 }
 
+export interface InvoiceWithLineItems extends Invoice {
+  lineItems: InvoiceLineItem[];
+  client: Client;
+}
+
 export interface TimeEntryWithRelations extends TimeEntry {
   client?: Client | null;
   user: User;
