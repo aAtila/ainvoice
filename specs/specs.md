@@ -303,7 +303,7 @@
       - Protection against deleting clients with invoices
       - Input validation with Zod schemas
 
-- [ ] Step 9: Client management pages
+- [x] Step 9: Client management pages
   - **Task**: Create client list, add/edit client pages with responsive design
   - **Files**:
     - `src/app/(dashboard)/clients/page.tsx`: Client list page
@@ -314,6 +314,59 @@
     - `src/components/clients/ClientCard.tsx`: Individual client card
   - **Step Dependencies**: Step 8
   - **User Instructions**: None
+  - **Review**:
+    - **Client List Page** (`src/app/(dashboard)/clients/page.tsx`):
+      - Search bar with real-time filtering
+      - Filter dropdowns for city and state (prepared for dynamic data)
+      - Sort options: name, email, created date, updated date
+      - Toggle between table and grid views
+      - Pagination with page size of 20
+      - "Add Client" button in header
+      - Responsive layout with mobile-friendly controls
+    - **Add New Client Page** (`src/app/(dashboard)/clients/new/page.tsx`):
+      - Breadcrumb navigation
+      - Back button to return to list
+      - Error handling with user-friendly messages
+      - Success redirect to client list
+      - Loading state during submission
+    - **Edit Client Page** (`src/app/(dashboard)/clients/[id]/page.tsx`):
+      - Breadcrumb with client name
+      - Client statistics cards: Total Invoices, Total Revenue, Paid Revenue, Total Hours
+      - Recent invoices list with status badges
+      - Delete button with protection for clients with invoices
+      - Confirmation modal for deletion
+      - Loading skeleton during data fetch
+      - Error handling with fallback UI
+    - **ClientForm Component** (`src/components/clients/ClientForm.tsx`):
+      - Reusable form for create and edit operations
+      - Three sections: Basic Information, Address Information, Additional Information
+      - Field validation with inline error messages
+      - Pre-populated data for edit mode
+      - Responsive grid layout for form fields
+      - Cancel and submit buttons with loading states
+    - **ClientList Component** (`src/components/clients/ClientList.tsx`):
+      - Table view with sortable columns
+      - Grid view with ClientCard components
+      - Loading skeleton animation
+      - Empty state with CTA
+      - Dropdown menu for row actions (Edit, Delete)
+      - Delete confirmation modal
+      - Protection against deleting clients with invoices
+    - **ClientCard Component** (`src/components/clients/ClientCard.tsx`):
+      - Displays client name, email, phone, location
+      - Shows invoice and time entry counts
+      - "New" badge for clients without activity
+      - Edit and delete action buttons
+      - Hover effect for better interactivity
+      - Click card to edit functionality
+    - **Key Features Implemented**:
+      - Full CRUD operations with optimistic UI
+      - Real-time search and filtering
+      - Responsive design with mobile-first approach
+      - Loading states and error boundaries
+      - Data integrity protection (no deletion of clients with invoices)
+      - Consistent UI patterns across all pages
+      - Accessibility with ARIA labels and keyboard navigation
 
 ## Invoice Core Features
 
