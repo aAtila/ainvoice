@@ -247,7 +247,7 @@
 
 ## Client Management
 
-- [ ] Step 8: Client database operations
+- [x] Step 8: Client database operations
 
   - **Task**: Create server actions and hooks for client CRUD operations
   - **Files**:
@@ -256,6 +256,52 @@
     - `src/lib/validations/client.ts`: Client form validation schemas
   - **Step Dependencies**: Step 7
   - **User Instructions**: None
+  - **Review**:
+    - Installed dependency: swr for data fetching and caching
+    - **Client validation schemas** (`src/lib/validations/client.ts`):
+      - `clientSchema` - Base schema with all client fields
+      - `createClientSchema` - Schema for creating new clients
+      - `updateClientSchema` - Schema for updates (all fields optional)
+      - `clientFilterSchema` - Schema for search/filter parameters
+      - `clientSearchSchema` - Schema for autocomplete search
+      - Validates email format, phone numbers, postal codes
+      - Type exports for TypeScript integration
+    - **Server actions** (`src/lib/actions/clients.ts`):
+      - `createClient` - Creates new client with duplicate email check
+      - `updateClient` - Updates client with ownership verification
+      - `deleteClient` - Deletes client (prevents if has invoices)
+      - `getClient` - Fetches single client with related data
+      - `getClients` - Lists clients with pagination, filtering, and sorting
+      - `searchClients` - Quick search for autocomplete
+      - `getClientStats` - Aggregates client statistics
+      - All actions include:
+        - User authentication checks
+        - Proper error handling with user-friendly messages
+        - Path revalidation for Next.js caching
+        - Prisma type safety
+    - **Client hooks** (`src/hooks/useClients.ts`):
+      - `useClients` - List clients with pagination and filters
+      - `useClient` - Fetch single client details
+      - `useClientStats` - Get client revenue and hours statistics
+      - `useClientSearch` - Debounced search for autocomplete
+      - `useCreateClient` - Handle client creation with loading states
+      - `useUpdateClient` - Handle updates with optimistic UI
+      - `useDeleteClient` - Handle deletion with cache invalidation
+      - Features:
+        - SWR for intelligent caching and revalidation
+        - Optimistic updates for instant UI feedback
+        - Proper error handling and loading states
+        - Type-safe with full TypeScript support
+    - **Supporting utilities**:
+      - Created `useDebounce` hook for search input debouncing
+      - Comprehensive error messages for better UX
+      - Pagination with offset-based approach
+      - Case-insensitive search across multiple fields
+    - Security features:
+      - All queries scoped to authenticated user
+      - Ownership verification before updates/deletes
+      - Protection against deleting clients with invoices
+      - Input validation with Zod schemas
 
 - [ ] Step 9: Client management pages
   - **Task**: Create client list, add/edit client pages with responsive design
