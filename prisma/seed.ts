@@ -2,11 +2,12 @@ import { PrismaClient, InvoiceStatus } from '../src/generated/prisma';
 
 const prisma = new PrismaClient();
 
-// Simple hash function for demo purposes (in production, use bcrypt or similar)
-function hashPassword(password: string): string {
-  // For demo purposes, just return a simple transformation
-  // In production, use proper password hashing like bcrypt
-  return `hashed_${password}`;
+import bcrypt from 'bcryptjs';
+
+// Hash password using bcrypt
+async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
 }
 
 async function main() {
@@ -25,7 +26,7 @@ async function main() {
   const demoUser = await prisma.user.create({
     data: {
       email: 'demo@ainvoice.com',
-      password: hashPassword('demo123'), // In production, use proper password hashing
+      password: await hashPassword('demo123'),
       companyName: 'Demo Freelancer Inc.',
       companyAddress: '123 Main St, Suite 100\nSan Francisco, CA 94105',
       companyTaxId: 'XX-1234567',
