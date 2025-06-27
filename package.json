@@ -1,6 +1,7 @@
 {
-  "name": "ainvoice-app",
+  "name": "ainvoice",
   "version": "0.1.0",
+  "description": "Minimalist invoicing app for freelancers",
   "private": true,
   "scripts": {
     "dev": "next dev",
