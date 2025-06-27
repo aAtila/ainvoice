@@ -2,7 +2,7 @@
 
 ## Project Setup & Infrastructure
 
-- [ ] Step 1: Update project metadata and basic configuration
+- [x] Step 1: Update project metadata and basic configuration
 
   - **Task**: Update package.json metadata, layout title/description, and create basic project structure with types and utilities
   - **Files**:
@@ -14,7 +14,7 @@
   - **Step Dependencies**: None
   - **User Instructions**: None
 
-- [ ] Step 2: Install and configure **Prisma with SQLite**
+- [x] Step 2: Install and configure **Prisma with SQLite**
 
   - **Task**: Add Prisma, initialise the project with a _local_ SQLite
     datasource, generate the Prisma client, and set up environment
