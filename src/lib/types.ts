@@ -1,45 +1,25 @@
 // Core type definitions for AInvoice
+// Re-export Prisma types and add custom form/utility types
 
-export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+export {
+  User,
+  Client,
+  Invoice,
+  InvoiceLineItem,
+  TimeEntry,
+  RecurringInvoice,
+  EmailLog,
+  PaymentReminder,
+  TaxRate,
+  InvoiceStatus,
+  RecurringInterval,
+} from '../generated/prisma';
 
+// Custom types that aren't in Prisma
 export type Currency = 'USD' | 'EUR' | 'GBP' | string;
 
-export type RecurringInterval = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
-
-export interface User {
-  id: string;
-  email: string;
-  companyName?: string;
-  companyAddress?: string;
-  companyTaxId?: string;
-  companyLogo?: string;
-  defaultCurrency?: Currency;
-  defaultTaxRate?: number;
-  invoiceNumberPrefix?: string;
-  invoiceNumberSuffix?: string;
-  nextInvoiceNumber?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Client {
-  id: string;
-  userId: string;
-  name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
-  taxId?: string;
-  notes?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface LineItem {
+// Re-export LineItem as a more convenient name
+export type LineItem = {
   id?: string;
   description: string;
   quantity: number;
@@ -48,75 +28,7 @@ export interface LineItem {
   amount?: number; // Calculated: quantity * rate
   taxAmount?: number; // Calculated: amount * (taxRate / 100)
   total?: number; // Calculated: amount + taxAmount
-}
-
-export interface Invoice {
-  id: string;
-  userId: string;
-  clientId: string;
-  client?: Client; // Populated when fetched with relations
-  invoiceNumber: string;
-  invoiceDate: Date;
-  dueDate: Date;
-  status: InvoiceStatus;
-  currency: Currency;
-  lineItems: LineItem[];
-  subtotal: number; // Sum of all line item amounts (in minor units)
-  taxTotal: number; // Sum of all line item tax amounts (in minor units)
-  total: number; // subtotal + taxTotal (in minor units)
-  notes?: string;
-  terms?: string;
-  sentAt?: Date;
-  paidAt?: Date;
-  recurringSchedule?: RecurringSchedule;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface RecurringSchedule {
-  id: string;
-  interval: RecurringInterval;
-  nextDate: Date;
-  endDate?: Date;
-  isActive: boolean;
-}
-
-export interface TimeEntry {
-  id: string;
-  userId: string;
-  clientId?: string;
-  client?: Client;
-  date: Date;
-  hours: number;
-  description: string;
-  rate: number; // Hourly rate in minor units
-  isBillable: boolean;
-  isBilled: boolean;
-  invoiceId?: string;
-  invoice?: Invoice;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface EmailLog {
-  id: string;
-  invoiceId: string;
-  invoice?: Invoice;
-  recipientEmail: string;
-  subject: string;
-  sentAt: Date;
-  openedAt?: Date;
-  error?: string;
-}
-
-export interface PaymentReminder {
-  id: string;
-  invoiceId: string;
-  invoice?: Invoice;
-  scheduledFor: Date;
-  sentAt?: Date;
-  reminderNumber: number; // 1st reminder, 2nd reminder, etc.
-}
+};
 
 // Form input types (for use in forms before saving to database)
 export interface InvoiceFormData {
@@ -166,9 +78,27 @@ export interface UserSettings {
   emailSignature?: string;
 }
 
-export interface TaxRate {
-  id: string;
-  name: string;
-  rate: number; // Percentage
-  isDefault: boolean;
+// Utility types for populated relations
+export interface InvoiceWithRelations extends Invoice {
+  client: Client;
+  lineItems: InvoiceLineItem[];
+  user: User;
+}
+
+export interface TimeEntryWithRelations extends TimeEntry {
+  client?: Client | null;
+  user: User;
+}
+
+export interface ClientWithInvoices extends Client {
+  invoices: Invoice[];
+}
+
+// Type guards
+export function isInvoiceStatus(value: string): value is InvoiceStatus {
+  return ['draft', 'sent', 'paid', 'overdue', 'cancelled'].includes(value);
+}
+
+export function isRecurringInterval(value: string): value is RecurringInterval {
+  return ['weekly', 'monthly', 'quarterly', 'yearly'].includes(value);
 }

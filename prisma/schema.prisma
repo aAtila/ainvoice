@@ -10,3 +10,215 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+// Enums
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
+}
+
+enum RecurringInterval {
+  weekly
+  monthly
+  quarterly
+  yearly
+}
+
+// Models
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  password            String    // Will store hashed password
+  companyName         String?
+  companyAddress      String?
+  companyTaxId        String?
+  companyLogo         String?
+  defaultCurrency     String    @default("USD")
+  defaultTaxRate      Float     @default(0)
+  invoiceNumberPrefix String    @default("INV-")
+  invoiceNumberSuffix String    @default("")
+  nextInvoiceNumber   Int       @default(1)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  // Relations
+  clients             Client[]
+  invoices            Invoice[]
+  timeEntries         TimeEntry[]
+  taxRates            TaxRate[]
+  recurringInvoices   RecurringInvoice[]
+
+  @@index([email])
+}
+
+model Client {
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  email      String
+  phone      String?
+  address    String?
+  city       String?
+  state      String?
+  postalCode String?
+  country    String?
+  taxId      String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices   Invoice[]
+  timeEntries TimeEntry[]
+
+  @@index([userId])
+  @@index([email])
+}
+
+model Invoice {
+  id                String         @id @default(cuid())
+  userId            String
+  clientId          String
+  invoiceNumber     String
+  invoiceDate       DateTime
+  dueDate           DateTime
+  status            InvoiceStatus  @default(draft)
+  currency          String         @default("USD")
+  subtotal          Int            // Amount in minor units (cents)
+  taxTotal          Int            // Amount in minor units (cents)
+  total             Int            // Amount in minor units (cents)
+  notes             String?
+  terms             String?
+  sentAt            DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client            Client              @relation(fields: [clientId], references: [id])
+  lineItems         InvoiceLineItem[]
+  emailLogs         EmailLog[]
+  paymentReminders  PaymentReminder[]
+  recurringInvoiceId String?
+  recurringInvoice  RecurringInvoice?   @relation(fields: [recurringInvoiceId], references: [id])
+
+  @@unique([userId, invoiceNumber])
+  @@index([userId])
+  @@index([clientId])
+  @@index([status])
+  @@index([dueDate])
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  description String
+  quantity    Float
+  rate        Int      // Amount in minor units (cents)
+  taxRate     Float    @default(0) // Percentage (e.g., 20 for 20%)
+  amount      Int      // Calculated: quantity * rate (in minor units)
+  taxAmount   Int      // Calculated: amount * (taxRate / 100) (in minor units)
+  total       Int      // Calculated: amount + taxAmount (in minor units)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model TimeEntry {
+  id          String    @id @default(cuid())
+  userId      String
+  clientId    String?
+  date        DateTime
+  hours       Float
+  description String
+  rate        Int       // Hourly rate in minor units
+  isBillable  Boolean   @default(true)
+  isBilled    Boolean   @default(false)
+  invoiceId   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client      Client?   @relation(fields: [clientId], references: [id])
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([date])
+  @@index([isBilled])
+}
+
+model RecurringInvoice {
+  id              String            @id @default(cuid())
+  userId          String
+  templateData    String            // JSON string containing invoice template
+  interval        RecurringInterval
+  nextDate        DateTime
+  endDate         DateTime?
+  isActive        Boolean           @default(true)
+  lastGeneratedAt DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices        Invoice[]
+
+  @@index([userId])
+  @@index([nextDate])
+  @@index([isActive])
+}
+
+model EmailLog {
+  id             String    @id @default(cuid())
+  invoiceId      String
+  recipientEmail String
+  subject        String
+  sentAt         DateTime  @default(now())
+  openedAt       DateTime?
+  error          String?
+
+  // Relations
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model PaymentReminder {
+  id             String    @id @default(cuid())
+  invoiceId      String
+  scheduledFor   DateTime
+  sentAt         DateTime?
+  reminderNumber Int       // 1st reminder, 2nd reminder, etc.
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@index([scheduledFor])
+}
+
+model TaxRate {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  rate      Float    // Percentage
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}

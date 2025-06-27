@@ -36,7 +36,7 @@
     3. Restart the dev server so TypeScript picks up the generated
        types.
 
-- [ ] Step 3: Data modelling & Prisma migrations
+- [x] Step 3: Data modelling & Prisma migrations
 
   - **Task**: Define Prisma models for users, clients, invoices, and
     time entries, then apply and seed the database.
