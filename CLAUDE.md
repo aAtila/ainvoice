@@ -35,6 +35,7 @@ There are three primary tools to always consider using: the RepoPrompt MCP serve
   - RepoPrompt to identify files → Gemini to analyze their combined content
   - Gemini to find patterns → RepoPrompt and ast-grep to navigate to specific instances
   - Large refactoring requiring both broad analysis and targeted edits
+- **After Conversation Compaction**: When conversation history is compacted, consider what context needs rebuilding based on the next task. Tools like RepoPrompt's codemap can efficiently restore structural understanding of relevant files.
 
 ### Testing
 
